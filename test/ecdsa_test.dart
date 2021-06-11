@@ -10,7 +10,7 @@ void main() {
     });
 
     test('Base Test', () {
-      print('BitSize ${ec.BitSize}, ByteSize ${(ec.BitSize + 7) ~/ 8}');
+      print('BitSize ${ec.bitSize}, ByteSize ${(ec.bitSize + 7) ~/ 8}');
       var priv = ec.generatePrivateKey();
       var _ = priv.publicKey;
     });

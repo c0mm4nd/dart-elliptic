@@ -1,3 +1,9 @@
+## 0.3.0
+
+- New abstract class curve for secp256k1 etc in https://www.secg.org/sec2-v2.pdf 
+- More customizable params for EllipticCurve (maybe can work on k1)
+- Add some TODOs
+
 ## 0.2.0
 
 - Null-safe

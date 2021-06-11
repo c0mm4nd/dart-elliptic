@@ -1,8 +1,21 @@
 import 'privatekey.dart';
 import 'publickey.dart';
 
+// all params follows http://www.secg.org/sec2-v2.pdf
 abstract class Curve {
-  int get BitSize;
+  String get name;
+  int get bitSize; // BitSize is the size of the underlying secp256k1 field in bits.
+
+  BigInt get p; // the order of the underlying field
+  BigInt get a; // the factor of x^1
+  BigInt get b; // the constant of the curve equation
+  BigInt get S; // the seed for choosing E from Fp, ANSI X9.62
+  AffinePoint
+      get G; // Gx&Gy are the x&y coordinate of the base point, respectively
+
+  BigInt get n; // the order of the base point
+  int get h;
+
   bool isOnCurve(AffinePoint p);
   AffinePoint add(AffinePoint p1, AffinePoint p2);
   AffinePoint dou(AffinePoint p);
@@ -53,4 +66,5 @@ class ErrInvalidPublicKeyHexLength implements Exception {}
 
 class ErrInvalidPublicKeyHexPrefix implements Exception {}
 
-class ErrInvalidPrivateKeyHex implements Exception {}
+class ErrInvalidPrivateKeyHexLength implements Exception {
+} // won't appear because the contructor will auto left padding 
