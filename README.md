@@ -2,7 +2,11 @@
 
 In cryptography, the  Digital Signature Algorithm (ECDSA) offers a variant of the Digital Signature Algorithm (DSA) which uses elliptic curve cryptography.
 
-This lib mainly defines the `abstract class Curve`, acting as *Elliptic Curve* which will be used in other packages like ecdsa, schnorr and secp256k1 etc.
+This lib mainly defines the `abstract class Curve`, serving *Elliptic Curve* which will be used in other packages like [ecdsa](https://pub.dev/packages/ecdsa), schnorr(WIP) and secp256k1 etc.
+
+You can also get the key pairs on the curve, but if you need to signiture message, please use the signature util package, like [ecdsa](https://pub.dev/packages/ecdsa). 
+
+This package is pure dart and no 3rd dependency.
 
 ## Usage
 

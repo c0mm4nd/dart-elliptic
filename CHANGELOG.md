@@ -1,3 +1,9 @@
+## 0.3.1
+
+- Add support to koblitz curves (secp256k1 & secp224k1)
+- Pass tests on secp256k1
+- Fix bug on loading compressed public key hex
+
 ## 0.3.0
 
 - New abstract class curve for secp256k1 etc in https://www.secg.org/sec2-v2.pdf 
