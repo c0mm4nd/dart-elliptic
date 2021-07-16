@@ -1,3 +1,7 @@
+## 0.3.2
+
+- Add ecdh library
+
 ## 0.3.1
 
 - Add support to koblitz curves (secp256k1 & secp224k1)

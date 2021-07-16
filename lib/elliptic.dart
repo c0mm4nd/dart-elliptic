@@ -1,6 +1,4 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// library elliptic provides a simple interface to elliptic curve cryptography.
 library elliptic;
 
 // export all

@@ -223,7 +223,7 @@ Curve getSecp256k1() {
   return _s256;
 }
 
-// TODO: apply this for S-curves
+// TODO: apply this for S-curves for optimization
 	// Next 6 constants are from Hal Finney's bitcointalk.org post:
 	// https://bitcointalk.org/index.php?topic=3238.msg45565#msg45565
 	// May he rest in peace.
