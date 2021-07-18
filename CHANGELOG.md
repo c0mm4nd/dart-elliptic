@@ -1,3 +1,7 @@
+## 0.3.3
+
+- Fix bug on generating compressed hex
+
 ## 0.3.2
 
 - Add ecdh library

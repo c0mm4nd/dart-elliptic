@@ -357,7 +357,7 @@ class EllipticCurve implements Curve {
     var byteLen = (bitSize + 7) ~/ 8;
 
     var compressed =
-        pub.Y.toRadixString(2).padLeft(bitSize)[0] == '0' ? '02' : '03';
+        pub.Y.toRadixString(2).padLeft(bitSize, '0')[0] == '0' ? '02' : '03';
     compressed += pub.X.toRadixString(16).padLeft(byteLen * 2, '0');
 
     return compressed;
@@ -407,8 +407,8 @@ class EllipticCurve implements Curve {
     var power = (p1 - p1 % BigInt.from(4)) ~/ BigInt.from(4);
     y = y.modPow(power, p); // get the sqrt mod
 
-    if ((y.toRadixString(2).padLeft(bitSize)[0] == '0' && hex[1] == '3') ||
-        (y.toRadixString(2).padLeft(bitSize)[0] == '1' && hex[1] == '2')) {
+    if ((y.toRadixString(2).padLeft(bitSize, '0')[0] == '0' && hex[1] == '3') ||
+        (y.toRadixString(2).padLeft(bitSize, '0')[0] == '1' && hex[1] == '2')) {
       y = (-y) % p;
     }
 
