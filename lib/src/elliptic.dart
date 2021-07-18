@@ -303,7 +303,7 @@ class EllipticCurve implements Curve {
   @override
   PrivateKey generatePrivateKey() {
     var random = Random.secure();
-    var byteLen = (bitSize + 7) ~/ 8;
+    var byteLen = (bitSize + 7) >> 3;
     var _p = AffinePoint();
     BigInt D;
     late List<int> rand;
@@ -340,7 +340,7 @@ class EllipticCurve implements Curve {
   /// specified in section 4.3.6 of ANSI X9.62.
   @override
   String publicKeyToHex(PublicKey pub) {
-    var byteLen = (bitSize + 7) ~/ 8;
+    var byteLen = (bitSize + 7) >> 3;
 
     var ret = '04'; // uncompressed point
 
@@ -354,10 +354,9 @@ class EllipticCurve implements Curve {
   /// specified in section 4.3.6 of ANSI X9.62.
   @override
   String publicKeyToCompressedHex(PublicKey pub) {
-    var byteLen = (bitSize + 7) ~/ 8;
+    var byteLen = (bitSize + 7) >> 3;
 
-    var compressed =
-        pub.Y.toRadixString(2).padLeft(bitSize, '0')[0] == '0' ? '02' : '03';
+    var compressed = pub.Y.isOdd ? '03' : '02';
     compressed += pub.X.toRadixString(16).padLeft(byteLen * 2, '0');
 
     return compressed;
@@ -368,7 +367,7 @@ class EllipticCurve implements Curve {
     if (hex.substring(0, 2) != '04') {
       throw ('invalid public key hex string');
     }
-    var byteLen = (bitSize + 7) ~/ 8;
+    var byteLen = (bitSize + 7) >> 3;
     if (hex.length != 2 * (1 + 2 * byteLen)) {
       throw ('invalid public key hex string');
     }
@@ -389,7 +388,7 @@ class EllipticCurve implements Curve {
       throw ('invalid public key hex string');
     }
 
-    var byteLen = (bitSize + 7) ~/ 8;
+    var byteLen = (bitSize + 7) >> 3;
 
     if (hex.length != 2 * (1 + byteLen)) {
       throw ('invalid public key hex string');
@@ -404,12 +403,11 @@ class EllipticCurve implements Curve {
     var y = _polynomial(x);
 
     var p1 = p + BigInt.one; // p+1
-    var power = (p1 - p1 % BigInt.from(4)) ~/ BigInt.from(4);
+    var power = (p1 - p1 % BigInt.from(4)) >> 2;
     y = y.modPow(power, p); // get the sqrt mod
 
-    if ((y.toRadixString(2).padLeft(bitSize, '0')[0] == '0' && hex[1] == '3') ||
-        (y.toRadixString(2).padLeft(bitSize, '0')[0] == '1' && hex[1] == '2')) {
-      y = (-y) % p;
+    if (y.isOdd != (hex.substring(0, 2) == '03')) {
+      y = p - y;
     }
 
     var pub = PublicKey(this, x, y);

@@ -1,3 +1,9 @@
+## 0.3.4
+
+- Fix hex, Enhance hex
+- Enhance bigint calc
+- Add tests for hex
+
 ## 0.3.3
 
 - Fix bug on generating compressed hex

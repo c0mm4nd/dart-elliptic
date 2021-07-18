@@ -11,7 +11,7 @@ void main() {
     });
 
     test('Base Test', () {
-      print('BitSize ${ec.bitSize}, ByteSize ${(ec.bitSize + 7) ~/ 8}');
+      print('BitSize ${ec.bitSize}, ByteSize ${(ec.bitSize + 7) >> 3}');
       var priv = ec.generatePrivateKey();
       var _ = priv.publicKey;
     });
@@ -95,12 +95,14 @@ void main() {
     });
 
     test('Preasure Test', () {
+      final stopwatch = Stopwatch()..start();
       for (var i = 0; i < 10000; i++) {
         var priv = ec.generatePrivateKey();
         var pub = priv.publicKey;
 
         expect(ec.isOnCurve(pub), isTrue);
       }
+      print('gen key & check executed in ${stopwatch.elapsed}');
     });
 
     test('Test _doubleJacobian', () {
@@ -189,6 +191,8 @@ void main() {
         print(pub2);
         expect(curve.isOnCurve(pub1), true);
         expect(pub1, pub2);
+        expect(
+            vec[1] == pub1.toCompressedHex() || vec[1] == pub1.toHex(), isTrue);
       }
     });
   });
