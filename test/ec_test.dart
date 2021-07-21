@@ -90,8 +90,6 @@ void main() {
           priv4.publicKey.toString(),
           equals(
               '044b71543c13337f5ab1bcf7c0206d82d8e2219420da960ee708e61e7bfc486bb8cb414ac0047bb559eed60fceae83aa249e16b043c02ef543bd8ebfffa221204a20f27713249a45e11e65469b4ce0154523f20f13bd080829a7aee17d6cb07fc6'));
-
-      // TODO: add sign check in ECDSA package
     });
 
     test('Preasure Test', () {
