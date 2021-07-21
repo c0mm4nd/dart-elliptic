@@ -1,3 +1,7 @@
+## 0.3.5
+
+- Add EllipticException for better error handling
+
 ## 0.3.4
 
 - Fix hex, Enhance hex

@@ -1,4 +1,5 @@
 import 'base.dart';
+import 'err.dart';
 
 /// [PublicKey] represents a public key which is a point on a 2d [Curve],
 ///  taking [BigInt] X, Y as the coordinates on axis
@@ -13,7 +14,7 @@ class PublicKey extends AffinePoint {
   /// or not
   PublicKey.fromHex(this.curve, String hex) {
     if (hex.length <= 2) {
-      throw ErrInvalidPublicKeyHexLength();
+      throw ErrInvalidPublicKeyHexLength;
     }
 
     late PublicKey pub;
@@ -29,7 +30,7 @@ class PublicKey extends AffinePoint {
         pub = curve.hexToPublicKey(hex);
         break;
       default:
-        throw ErrInvalidPublicKeyHexPrefix();
+        throw ErrInvalidPublicKeyHexPrefix;
     }
 
     X = pub.X;

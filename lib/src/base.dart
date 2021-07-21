@@ -61,10 +61,3 @@ class JacobianPoint {
         (X == other.X && Y == other.Y && Z == other.Z);
   }
 }
-
-class ErrInvalidPublicKeyHexLength implements Exception {}
-
-class ErrInvalidPublicKeyHexPrefix implements Exception {}
-
-class ErrInvalidPrivateKeyHexLength implements Exception {
-} // won't appear because the contructor will auto left padding 
