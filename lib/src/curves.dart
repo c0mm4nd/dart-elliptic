@@ -3,6 +3,33 @@ import 'elliptic.dart';
 
 /// P curves
 
+late EllipticCurve _p128 = EllipticCurve(
+  'secp128r1', // Parameters from https://neuromancer.sk/std/secg/secp128r1
+  128, // bitSize
+  BigInt.parse('fffffffdffffffffffffffffffffffff', radix: 16), // p
+  BigInt.parse('fffffffdfffffffffffffffffffffffc', radix: 16), //a
+  BigInt.parse('e87579c11079f43dd824993c2cee5ed3', radix: 16), //b
+  BigInt.zero, //S
+  AffinePoint.fromXY(
+    BigInt.parse('161ff7528b899b2d0c28607ca52c5b86', radix: 16),
+    BigInt.parse('cf5ac8395bafeb13c02da292dded7a83', radix: 16),
+  ), // G
+  BigInt.parse('fffffffe0000000075a30d1b9038a115', radix: 16), //N
+  01, // h
+);
+
+/// [getP128] returns a [EllipticCurve] which implements P-128 (see SEC2-Ver-1.0, section 2.3.1).
+///
+/// The cryptographic operations are implemented using constant-time algorithms.
+Curve getP128() {
+  return _p128;
+}
+
+/// [getSecp128r1] is same to [getP128]
+Curve getSecp128r1() {
+  return _p128;
+}
+
 late EllipticCurve _p224 = EllipticCurve(
   'secp224r1', // See FIPS 186-3, section D.2.2
   224,
