@@ -1,3 +1,7 @@
+## 0.3.6
+
+- Fix ecdh
+
 ## 0.3.5
 
 - Add EllipticException for better error handling
