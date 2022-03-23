@@ -1,3 +1,4 @@
+import 'package:elliptic/ecdh.dart';
 import 'package:elliptic/elliptic.dart';
 import 'package:elliptic/src/curves.dart';
 import 'package:test/test.dart';
@@ -192,6 +193,19 @@ void main() {
         expect(
             vec[1] == pub1.toCompressedHex() || vec[1] == pub1.toHex(), isTrue);
       }
+    });
+
+    test('Test ECDH', () {
+      final stopwatch = Stopwatch()..start();
+      for (var i = 0; i < 10000; i++) {
+        var privA = ec.generatePrivateKey();
+        var privB = ec.generatePrivateKey();
+        var pubA = ec.privateToPublicKey(privA);
+        var pubB = ec.privateToPublicKey(privB);
+
+        expect(computeSecret(privA, pubB).toString(), equals(computeSecret(privB, pubA).toString()));
+      }
+      print('gen keys & check ecdh executed in ${stopwatch.elapsed}');
     });
   });
 }
