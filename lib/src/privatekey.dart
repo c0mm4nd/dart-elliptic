@@ -33,7 +33,8 @@ class PrivateKey {
   }
 
   String toHex() {
-    return D.toRadixString(16);
+    var byteLen = (curve.bitSize + 7) >> 3;
+    return D.toRadixString(16).padLeft(byteLen * 2, '0');
   }
 
   @override

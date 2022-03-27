@@ -7,7 +7,7 @@ List<int> computeSecret(PrivateKey selfPriv, PublicKey otherPub) {
   var curve = selfPriv.curve;
   var byteLen = (curve.bitSize + 7) >> 3;
   var p = curve.scalarMul(otherPub, selfPriv.bytes);
-  var hex = p.X.toRadixString(16).padLeft(64, '0');
+  var hex = p.X.toRadixString(16).padLeft(byteLen * 2, '0');
   return List<int>.generate(
       byteLen, (i) => int.parse(hex.substring(i * 2, i * 2 + 2), radix: 16));
 }

@@ -195,17 +195,34 @@ void main() {
       }
     });
 
-    test('Test ECDH', () {
+    test('Test ECDH 256', () {
       final stopwatch = Stopwatch()..start();
       for (var i = 0; i < 10000; i++) {
+        var ec = getP256();
         var privA = ec.generatePrivateKey();
         var privB = ec.generatePrivateKey();
         var pubA = ec.privateToPublicKey(privA);
         var pubB = ec.privateToPublicKey(privB);
 
-        expect(computeSecret(privA, pubB).toString(), equals(computeSecret(privB, pubA).toString()));
+        expect(computeSecret(privA, pubB).toString(),
+            equals(computeSecret(privB, pubA).toString()));
       }
-      print('gen keys & check ecdh executed in ${stopwatch.elapsed}');
+      print('gen keys & check ecdh 256 executed in ${stopwatch.elapsed}');
+    });
+
+    test('Test ECDH 521', () {
+      final stopwatch = Stopwatch()..start();
+      for (var i = 0; i < 1000; i++) {
+        var ec = getP521();
+        var privA = ec.generatePrivateKey();
+        var privB = ec.generatePrivateKey();
+        var pubA = ec.privateToPublicKey(privA);
+        var pubB = ec.privateToPublicKey(privB);
+
+        expect(computeSecret(privA, pubB).toString(),
+            equals(computeSecret(privB, pubA).toString()));
+      }
+      print('gen keys & check ecdh 521 executed in ${stopwatch.elapsed}');
     });
   });
 }
