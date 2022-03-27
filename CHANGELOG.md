@@ -1,3 +1,7 @@
+## 0.3.7
+
+- Fix ecdh computeSecret
+
 ## 0.3.6
 
 - Fix ecdh
