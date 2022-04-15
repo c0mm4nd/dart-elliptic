@@ -168,18 +168,21 @@ class EllipticCurve implements Curve {
   }
 
   JacobianPoint _doubleJacobian(BigInt x, BigInt y, BigInt z) {
+    
     switch (a.toInt()) {
-      case -3:
-        {
-          return _doubleJacobian_random(x, y, z);
-        }
+      // case -3:
+      //   {
+      //     return _doubleJacobian_random(x, y, z);
+      //   }
 
-      case 0:
-        {
-          return _doubleJacobian_koblitz(x, y, z);
-        }
+      // case 0:
+      //   {
+      //     return _doubleJacobian_koblitz(x, y, z);
+      //   }
       default:
-        throw Exception('unknown curve type: a = $a');
+        // follow https://github.com/indutny/elliptic/blob/43ac7f230069bd1575e1e4a58394a512303ba803/lib/elliptic/curve/short.js#L802
+        // JPoint.prototype._dbl steps
+        return _doubleJacobian_generic(x, y, z);
     }
   }
 
@@ -269,6 +272,33 @@ class EllipticCurve implements Curve {
     y3 = (BigInt.from(3) * xx) * e - BigInt.from(8) * yyyy;
 
     return JacobianPoint.fromXYZ(x3, y3, z3);
+  }
+
+
+  JacobianPoint _doubleJacobian_generic(BigInt x, BigInt y, BigInt z) {
+    var z4 = z.modPow(BigInt.from(4), p);
+    var x2 = x * x % p;
+    var y2 = y * y % p;
+
+    var c = x2 + x2;
+    c = c + x2;
+    c = c + a * z4;
+    c = c % p;
+
+    var xd4 = x + x;
+    xd4 = xd4 + xd4;
+    var t1 = xd4 * y2;
+    var nx = (c * c - (t1 + t1)) % p;
+    var t2 = t1 - nx;
+
+    var yd8 = (y2 * y2) % p;
+    yd8 = yd8 + yd8;
+    yd8 = yd8 + yd8;
+    yd8 = yd8 + yd8;
+    var ny = (c * t2 - yd8) % p;
+    var nz = ((y + y) * z) % p;
+     
+    return JacobianPoint.fromXYZ(nx, ny, nz);
   }
 
   AffinePoint _affineFromJacobian(BigInt x, BigInt y, BigInt z) {
