@@ -1,3 +1,7 @@
+## 0.3.8
+
+- Support any a(alpha) value in curve
+
 ## 0.3.7
 
 - Fix ecdh computeSecret
