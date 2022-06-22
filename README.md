@@ -28,7 +28,7 @@ void main() {
   var privateAlice = ec.generatePrivateKey();
   var publicAlice = privateAlice.publicKey;
   var privateBob = ec.generatePrivateKey();
-  var publicBob = privateAlice.publicKey;
+  var publicBob = privateBob.publicKey;
   var secretAlice = computeSecretHex(privateAlice, publicBob);
   var secretBob = computeSecretHex(privateBob, publicAlice);
   print('secretAlice: 0x$secretAlice');
