@@ -1,10 +1,14 @@
 name: elliptic
-description: basic elliptic curves
-version: 0.3.8
-homepage: https://github.com/C0MM4ND/dart-elliptic
+description: basic elliptic curves in pure dart
+version: 0.3.10
+homepage: https://github.com/c0mm4nd/dart-elliptic
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.12.0 <4.0.0"
+
+false_secrets:
+ - /example/ec_example.dart
+ - /README.md
 
 #dependencies:
 #  path: ^1.7.0
@@ -12,3 +16,4 @@ environment:
 dev_dependencies:
   pedantic: ^1.9.0
   test: ^1.14.4
+  pem: ^2.0.0

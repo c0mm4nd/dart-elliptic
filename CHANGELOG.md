@@ -1,3 +1,11 @@
+## 0.3.10
+
+- Add the PEM example to README
+
+## 0.3.9
+
+- Change sdk to ">=2.12.0 <4.0.0"
+
 ## 0.3.8
 
 - Support any a(alpha) value in curve

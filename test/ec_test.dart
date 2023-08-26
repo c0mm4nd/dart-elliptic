@@ -1,6 +1,5 @@
 import 'package:elliptic/ecdh.dart';
 import 'package:elliptic/elliptic.dart';
-import 'package:elliptic/src/curves.dart';
 import 'package:test/test.dart';
 
 void main() {
