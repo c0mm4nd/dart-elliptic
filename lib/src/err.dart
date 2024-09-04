@@ -13,7 +13,7 @@ class EllipticException implements Exception {
   int get hashCode => message.hashCode;
 
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       other is EllipticException && message == other.message;
 }
 
