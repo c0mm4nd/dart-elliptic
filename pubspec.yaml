@@ -1,6 +1,6 @@
 name: elliptic
 description: basic elliptic curves in pure dart
-version: 0.3.10
+version: 0.3.11
 homepage: https://github.com/c0mm4nd/dart-elliptic
 
 environment:
