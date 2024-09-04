@@ -62,7 +62,7 @@ class EllipticCurve implements Curve {
     return _polynomial(point.X) == y2;
   }
 
-  /// [scalarMult] returns [k]*([basePoint].X, [basePoint].Y) where [k] is a number
+  /// [scalarMul] returns [k]*([basePoint].X, [basePoint].Y) where [k] is a number
   /// in big-endian form ([BigInt] bytes).
   @override
   AffinePoint scalarMul(AffinePoint basePoint, List<int> k) {
@@ -71,11 +71,11 @@ class EllipticCurve implements Curve {
     for (var byte in k) {
       for (var bitNum = 0; bitNum < 8; bitNum++) {
         _p = _doubleJacobian(_p.X, _p.Y, _p.Z);
-        if (byte & 0x80 == 0x80) {
-          _p = _addJacobian(
-              basePoint.X, basePoint.Y, BigInt.one, _p.X, _p.Y, _p.Z);
+        // Check the current bit (starting from the most significant bit)
+        if ((byte & (1 << (7 - bitNum))) != 0) {
+          _p = _addJacobian(basePoint.X, basePoint.Y, BigInt.one, _p.X, _p.Y,
+              _p.Z); // Point addition
         }
-        byte <<= 1;
       }
     }
 
@@ -251,24 +251,24 @@ class EllipticCurve implements Curve {
     // X3 = (3*X1^2+a)^2 - 8*X1*Y1^2
     // Y3 = (3*X1^2)*(4*X1*Y1^2 - X3) - 8*Y1^4
     // Z3 = 2*Y1*Z1
-    z3 = y * z * BigInt.two;
+    z3 = y * z * BigInt.two % p;
 
     var xx = x.modPow(BigInt.two, p);
     var yy = y.modPow(BigInt.two, p);
     var yyyy = y.modPow(BigInt.from(4), p);
 
     x3 = (BigInt.from(3) * xx + a).modPow(BigInt.two, p) -
-        BigInt.from(8) * x * yy;
+        BigInt.from(8) * x * yy % p;
     if (x3.sign < 0) {
       x3 += p;
     }
 
-    var e = BigInt.from(4) * x * yy - x3;
+    var e = (BigInt.from(4) * x * yy - x3) % p;
     if (e.sign < 0) {
       e += p;
     }
 
-    y3 = (BigInt.from(3) * xx) * e - BigInt.from(8) * yyyy;
+    y3 = ((BigInt.from(3) * xx) * e - BigInt.from(8) * yyyy) % p;
 
     return JacobianPoint.fromXYZ(x3, y3, z3);
   }
@@ -318,12 +318,11 @@ class EllipticCurve implements Curve {
   // y^2 = x³ - 3x + b, a always -3 in ECDSA, but
   // (k1 uses y^2 = x^3 + 7), a = 0, so a should be a var for curve
   BigInt _polynomial(BigInt x) {
-    var x3 = x * x * x;
+    var x3 = x * x * x % p;
 
-    var aX = x * a;
+    var aX = x * a % p;
 
-    x3 = x3 + aX + b;
-    x3 = x3 % p;
+    x3 = (x3 + aX + b) % p;
 
     return x3;
   }
