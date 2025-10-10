@@ -6,9 +6,19 @@ import 'err.dart';
 class PublicKey extends AffinePoint {
   Curve curve;
 
-  PublicKey(this.curve, BigInt X, BigInt Y) : super.fromXY(X, Y);
+  PublicKey(this.curve, BigInt X, BigInt Y) : super.fromXY(X, Y) {
+    // Validate that the point is on the curve
+    if (!curve.isOnCurve(this)) {
+      throw ErrPointNotOnCurve;
+    }
+  }
 
-  PublicKey.fromPoint(this.curve, AffinePoint p) : super.fromXY(p.X, p.Y);
+  PublicKey.fromPoint(this.curve, AffinePoint p) : super.fromXY(p.X, p.Y) {
+    // Validate that the point is on the curve
+    if (!curve.isOnCurve(this)) {
+      throw ErrPointNotOnCurve;
+    }
+  }
 
   /// [fromHex] will auto detect the hex type, which means hex can be compressed
   /// or not

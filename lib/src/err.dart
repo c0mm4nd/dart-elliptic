@@ -25,3 +25,6 @@ var ErrInvalidPublicKeyHexPrefix =
 
 var ErrInvalidPrivateKeyHexLength =
     EllipticException('privatekey hex length is invalid');
+
+var ErrPointNotOnCurve =
+    EllipticException('point is not on curve');

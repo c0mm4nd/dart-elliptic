@@ -1,10 +1,17 @@
 import 'publickey.dart';
 import 'privatekey.dart';
+import 'err.dart';
 
 List<int> computeSecret(PrivateKey selfPriv, PublicKey otherPub) {
   assert(selfPriv.curve == otherPub.curve);
 
   var curve = selfPriv.curve;
+  
+  // Validate that the public key point is on the curve
+  if (!curve.isOnCurve(otherPub)) {
+    throw ErrPointNotOnCurve;
+  }
+  
   var byteLen = (curve.bitSize + 7) >> 3;
   var p = curve.scalarMul(otherPub, selfPriv.bytes);
   var hex = p.X.toRadixString(16).padLeft(byteLen * 2, '0');

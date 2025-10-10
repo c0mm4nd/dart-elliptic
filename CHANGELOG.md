@@ -1,3 +1,16 @@
+## 0.3.12
+
+- **SECURITY FIX**: Add point validation to prevent invalid elliptic curve points from being used in ECDH
+  - `PublicKey` constructors now validate that points are on the curve
+  - `computeSecret()` validates public key points before ECDH computation
+  - Added `ErrPointNotOnCurve` exception for invalid points
+  - Prevents potential security vulnerabilities from malformed or malicious public keys
+
+## 0.3.11
+
+- fix EllipticException equality operator warn
+- improve scalaMul
+
 ## 0.3.10
 
 - Add the PEM example to README
