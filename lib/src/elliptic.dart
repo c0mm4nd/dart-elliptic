@@ -64,22 +64,49 @@ class EllipticCurve implements Curve {
 
   /// [scalarMul] returns [k]*([basePoint].X, [basePoint].Y) where [k] is a number
   /// in big-endian form ([BigInt] bytes).
+  ///
+  /// It uses a Montgomery ladder: every scalar bit performs exactly one point
+  /// addition and one point doubling, and the two working points are exchanged
+  /// with a branch-free conditional swap. Unlike the classic double-and-add,
+  /// no point operation is skipped based on the value of a secret bit, so the
+  /// execution shape no longer depends on the scalar.
+  ///
+  /// NOTE: Dart's [BigInt] arithmetic is not itself constant-time; this is a
+  /// best-effort mitigation of scalar-dependent timing, not a hard guarantee.
   @override
   AffinePoint scalarMul(AffinePoint basePoint, List<int> k) {
-    var _p = JacobianPoint.fromXYZ(basePoint.X, basePoint.Y, BigInt.zero);
+    // Invariant maintained across the ladder: r1 - r0 == basePoint.
+    var r0 = JacobianPoint.fromXYZ(BigInt.zero, BigInt.zero, BigInt.zero); // ∞
+    var r1 = JacobianPoint.fromXYZ(basePoint.X, basePoint.Y, BigInt.one);
 
     for (var byte in k) {
       for (var bitNum = 0; bitNum < 8; bitNum++) {
-        _p = _doubleJacobian(_p.X, _p.Y, _p.Z);
-        // Check the current bit (starting from the most significant bit)
-        if ((byte & (1 << (7 - bitNum))) != 0) {
-          _p = _addJacobian(basePoint.X, basePoint.Y, BigInt.one, _p.X, _p.Y,
-              _p.Z); // Point addition
-        }
+        var bit = (byte >> (7 - bitNum)) & 1;
+
+        _cswap(bit, r0, r1);
+        var sum = _addJacobian(r0.X, r0.Y, r0.Z, r1.X, r1.Y, r1.Z);
+        r0 = _doubleJacobian(r0.X, r0.Y, r0.Z);
+        r1 = sum;
+        _cswap(bit, r0, r1);
       }
     }
 
-    return _affineFromJacobian(_p.X, _p.Y, _p.Z);
+    return _affineFromJacobian(r0.X, r0.Y, r0.Z);
+  }
+
+  /// [_cswap] swaps the coordinates of [a] and [b] iff [bit] == 1, using
+  /// arithmetic selection so that no branch is taken on the (secret) [bit].
+  void _cswap(int bit, JacobianPoint a, JacobianPoint b) {
+    var m = BigInt.from(bit); // 0 or 1
+    BigInt sel(BigInt x, BigInt y) => x + (y - x) * m; // m==0 -> x, m==1 -> y
+    var ax = sel(a.X, b.X), ay = sel(a.Y, b.Y), az = sel(a.Z, b.Z);
+    var bx = sel(b.X, a.X), by = sel(b.Y, a.Y), bz = sel(b.Z, a.Z);
+    a.X = ax;
+    a.Y = ay;
+    a.Z = az;
+    b.X = bx;
+    b.Y = by;
+    b.Z = bz;
   }
 
   @override
@@ -339,12 +366,11 @@ class EllipticCurve implements Curve {
       // We have to mask off any excess bits in the case that the size of the
       // underlying field is not a whole number of bytes.
       rand[0] &= mask[bitSize % 8];
-      // This is because, in tests, rand will return all zeros and we don't
-      // want to get the point at infinity and loop forever.
-      rand[1] ^= 0x42;
+      // Reconstruct the scalar as a big-endian integer, zero-padding each byte
+      // to two hex digits.
       D = BigInt.parse(
-          List<String>.generate(byteLen, (i) => rand[i].toRadixString(16))
-              .join(),
+          List<String>.generate(
+              byteLen, (i) => rand[i].toRadixString(16).padLeft(2, '0')).join(),
           radix: 16);
 
       // If the scalar is out of range, sample another random number.
@@ -423,15 +449,18 @@ class EllipticCurve implements Curve {
     // y² = x³ - 3x + b
 
     var x = BigInt.parse(hex.substring(2 * 1, 2 * (1 + byteLen)), radix: 16);
-    if (x > p) {
+    if (x >= p) {
       throw ('invalid public key X value');
     }
 
-    var y = _polynomial(x);
+    var y2 = _polynomial(x);
 
-    var p1 = p + BigInt.one; // p+1
-    var power = (p1 - p1 % BigInt.from(4)) >> 2;
-    y = y.modPow(power, p); // get the sqrt mod
+    // Modular square root; _sqrtMod handles both p ≡ 3 (mod 4) and the general
+    // p ≡ 1 (mod 4) case (e.g. secp224r1, secp224k1).
+    var y = _sqrtMod(y2, p);
+    if ((y * y) % p != y2) {
+      throw ('public key is not on this curve');
+    }
 
     if (y.isOdd != (hex.substring(0, 2) == '03')) {
       y = p - y;
@@ -447,6 +476,66 @@ class EllipticCurve implements Curve {
 }
 
 var mask = [0xff, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x3f, 0x7f];
+
+/// [_sqrtMod] returns a square root of [a] modulo the prime [p], i.e. a value
+/// r such that r*r ≡ a (mod p). It throws when [a] is not a quadratic residue.
+///
+/// A fast path is used for p ≡ 3 (mod 4); the general Tonelli–Shanks algorithm
+/// handles p ≡ 1 (mod 4) primes correctly.
+BigInt _sqrtMod(BigInt a, BigInt p) {
+  a = a % p;
+  if (a.sign == 0) {
+    return BigInt.zero;
+  }
+
+  // Fast path: p ≡ 3 (mod 4).
+  if (p % BigInt.from(4) == BigInt.from(3)) {
+    return a.modPow((p + BigInt.one) >> 2, p);
+  }
+
+  // Euler's criterion: a must be a quadratic residue mod p.
+  if (a.modPow((p - BigInt.one) >> 1, p) != BigInt.one) {
+    throw ('no modular square root exists');
+  }
+
+  // Tonelli–Shanks: write p-1 = q * 2^s with q odd.
+  var q = p - BigInt.one;
+  var s = 0;
+  while (q.isEven) {
+    q >>= 1;
+    s++;
+  }
+
+  // Find a quadratic non-residue z.
+  var z = BigInt.two;
+  while (z.modPow((p - BigInt.one) >> 1, p) != p - BigInt.one) {
+    z += BigInt.one;
+  }
+
+  var m = s;
+  var c = z.modPow(q, p);
+  var t = a.modPow(q, p);
+  var r = a.modPow((q + BigInt.one) >> 1, p);
+
+  while (t != BigInt.one) {
+    var i = 0;
+    var tt = t;
+    while (tt != BigInt.one) {
+      tt = (tt * tt) % p;
+      i++;
+      if (i == m) {
+        throw ('no modular square root exists');
+      }
+    }
+    var b = c.modPow(BigInt.one << (m - i - 1), p);
+    m = i;
+    c = (b * b) % p;
+    t = (t * c) % p;
+    r = (r * b) % p;
+  }
+
+  return r;
+}
 
 // zForAffine returns a Jacobian Z value for the affine point (x, y). If x and
 // y are zero, it assumes that they represent the point at infinity because (0,

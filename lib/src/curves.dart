@@ -20,7 +20,10 @@ late EllipticCurve _p128 = EllipticCurve(
 
 /// [getP128] returns a [EllipticCurve] which implements P-128 (see SEC2-Ver-1.0, section 2.3.1).
 ///
-/// The cryptographic operations are implemented using constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 Curve getP128() {
   return _p128;
 }
@@ -53,7 +56,10 @@ late EllipticCurve _p224 = EllipticCurve(
 
 /// [getP224] returns a [EllipticCurve] which implements P-224 (see FIPS 186-3, section D.2.2).
 ///
-/// The cryptographic operations are implemented using constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 Curve getP224() {
   return _p224;
 }
@@ -94,7 +100,10 @@ late EllipticCurve _p256 = EllipticCurve(
 /// Multiple invocations of this function will return the same value, so it can
 /// be used for equality checks and switch statements.
 ///
-/// The cryptographic operations are implemented using constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 EllipticCurve getP256() {
   return _p256;
 }
@@ -134,7 +143,10 @@ late EllipticCurve _p384 = EllipticCurve(
 /// Multiple invocations of this function will return the same value, so it can
 /// be used for equality checks and switch statements.
 ///
-/// The cryptographic operations do not use constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 Curve getP384() {
   return _p384;
 }
@@ -174,7 +186,10 @@ Curve _p521 = EllipticCurve(
 /// Multiple invocations of this function will return the same value, so it can
 /// be used for equality checks and switch statements.
 ///
-/// The cryptographic operations do not use constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 Curve getP521() {
   return _p521;
 }
@@ -206,7 +221,10 @@ late EllipticCurve _s224 = EllipticCurve(
 
 /// [getS224] returns a [EllipticCurve] which implements S-224, aka secp224k1
 ///
-/// The cryptographic operations are implemented using constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 Curve getS224() {
   return _s224;
 }
@@ -240,7 +258,10 @@ late EllipticCurve _s256 = EllipticCurve(
 
 /// [getS256] returns a [EllipticCurve] which implements S-256, aka secp256k1
 ///
-/// The cryptographic operations are implemented using constant-time algorithms.
+/// Scalar multiplication uses a Montgomery ladder that performs the same point
+/// operations for every scalar bit, avoiding the secret-dependent branching of
+/// double-and-add. Note that Dart's [BigInt] arithmetic is itself not
+/// constant-time, so timing side channels cannot be fully ruled out.
 Curve getS256() {
   return _s256;
 }

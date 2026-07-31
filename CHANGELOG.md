@@ -1,3 +1,16 @@
+## 0.4.0
+
+- **SECURITY**: `scalarMul` now uses a Montgomery ladder (one addition and one
+  doubling per scalar bit, exchanged with a branch-free conditional swap) so the
+  execution shape no longer depends on secret scalar bits. Dart `BigInt`
+  arithmetic itself remains variable-time.
+- **SECURITY**: `compressedHexToPublicKey` computes the modular square root with
+  Tonelli–Shanks, fixing decoding for curves with p ≡ 1 (mod 4)
+  (secp224r1/secp224k1), and validates `x < p` and the recovered root.
+- Fix `generatePrivateKey`: remove a leftover test-only byte mutation and
+  zero-pad the range-check reconstruction.
+- Correct documentation that incorrectly claimed constant-time operations.
+
 ## 0.3.12
 
 - **SECURITY FIX**: Add point validation to prevent invalid elliptic curve points from being used in ECDH
