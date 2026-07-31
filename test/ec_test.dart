@@ -160,6 +160,17 @@ void main() {
           equals(priv3.publicKey));
     });
 
+    test('Test compressed decode on p == 1 (mod 4) curves', () {
+      // Exercises the Tonelli–Shanks square-root path: secp224r1 and secp224k1
+      // have field primes ≡ 1 (mod 4), where the old (p+1)/4 shortcut fails.
+      for (var curve in [getP224(), getSecp224k1()]) {
+        for (var i = 0; i < 20; i++) {
+          var pub = curve.generatePrivateKey().publicKey;
+          expect(PublicKey.fromHex(curve, pub.toCompressedHex()), equals(pub));
+        }
+      }
+    });
+
     test('Test S-256', () {
       var testVectors = [
         [
