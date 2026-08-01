@@ -1,5 +1,18 @@
 # dart-elliptic
 
+> **⚠️ Security notice — please upgrade to ≥ 0.4.0**
+>
+> Versions **< 0.4.0** have security-relevant fixes:
+> - Scalar multiplication was not constant-time (double-and-add that skipped an
+>   addition on zero scalar bits), which could leak a secret scalar via timing.
+>   0.4.0 uses a branch-uniform Montgomery ladder.
+> - Compressed public-key decoding was wrong for curves with p ≡ 1 (mod 4)
+>   (secp224r1 / secp224k1).
+>
+> **Key generation is not affected** — keys are sampled uniformly from a CSPRNG.
+> The timing issue is only relevant to an attacker who can measure your signing
+> timings locally; it is not exposed by ordinary use. Upgrading is recommended.
+
 In cryptography, the  Digital Signature Algorithm (ECDSA) offers a variant of the Digital Signature Algorithm (DSA) which uses elliptic curve cryptography.
 
 This lib mainly defines the `abstract class Curve`, serving *Elliptic Curve* which will be used in other packages like [ecdsa](https://pub.dev/packages/ecdsa), schnorr(WIP) and secp256k1 etc.
